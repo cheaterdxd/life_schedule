@@ -1,0 +1,41 @@
+# Bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.cache
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+# Distribution / packaging
+build/
+dist/
+downloads/
+eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+# Log files and reports
+*.log
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# PyCharm
+.idea/
+
+# Sublime Text
+*.sublime-*
+# Environment variables
+.env
