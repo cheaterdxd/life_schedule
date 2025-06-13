@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QFont
 from app.constants import WORK_MINUTES, SHORT_BREAK_MINUTES, LONG_BREAK_MINUTES
-
+from app.focus_mode import activate_block, deactivate_block
+from PySide6.QtWidgets import QMessageBox
 class PomodoroWidgetCompact(QWidget):
     # Lớp này không có thay đổi
     def __init__(self, parent=None):
@@ -59,12 +60,30 @@ class PomodoroWidgetCompact(QWidget):
         Nó CHỈ chịu trách nhiệm cập nhật text của nút.
         """
         if is_checked:
-            self.focus_mode_button.setText("Focus: ON")
-            print("Giao diện: Nút Focus đã được BẬT.") # In ra để kiểm tra
+            if str(activate_block()) == "42":  # Gọi hàm chặn trang web (nếu cần)-42 là mã trả về thành công
+                self.focus_mode_button.setText("Focus: ON")
+                self.focus_mode_button.setStyleSheet("background-color: #ff0000;")
+                print("Giao diện: Nút Focus đã được BẬT.") # In ra để kiểm tra
+            else: 
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Warning)
+                msg.setWindowTitle("Focus Mode Error")
+                msg.setText("Failed to activate Focus Mode.\nPlease check your settings or try again.")
+                msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+                msg.exec()
         else:
-            self.focus_mode_button.setText("Focus: OFF")
-            print("Giao diện: Nút Focus đã được TẮT.") # In ra để kiểm tra
-        
+            if str(deactivate_block()) == "42":  # Gọi hàm gỡ chặn trang web (nếu cần). 42 là mã trả về thành công
+                # Nếu gỡ chặn thành công, cập nhật giao diện nút
+                self.focus_mode_button.setText("Focus: OFF")
+                self.focus_mode_button.setStyleSheet("background-color: #ffffff;")
+                print("Giao diện: Nút Focus đã được TẮT.") # In ra để kiểm tra
+            else:
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Warning)
+                msg.setWindowTitle("Focus Mode Error")
+                msg.setText("Failed to deactivate Focus Mode.\nPlease check your settings or try again.")
+                msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+                msg.exec()
         # TODO: Sau này, logic backend (chặn/gỡ chặn web) sẽ được gọi từ đây.
         
     def start_timer(self):

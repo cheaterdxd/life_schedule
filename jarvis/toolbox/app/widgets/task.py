@@ -27,20 +27,20 @@ class TaskWidgetCompact(QWidget):
         layout.addWidget(self.task_combo)
 
 
-        self.add_button = QPushButton("+")
-        self.add_button.setFont(QFont("Segoe UI Symbol", 16))
-        self.add_button.setFixedSize(28, 28)
-        layout.addWidget(self.add_button)
-        self.delete_button = QPushButton("−")
-        self.delete_button.setFont(QFont("Segoe UI Symbol", 16))
-        self.delete_button.setFixedSize(28, 28)
-        layout.addWidget(self.delete_button)
-        self.add_button.clicked.connect(self.add_task)
-        self.delete_button.clicked.connect(self.delete_task)
+        # self.add_button = QPushButton("+")
+        # self.add_button.setFont(QFont("Segoe UI Symbol", 16))
+        # self.add_button.setFixedSize(28, 28)
+        # layout.addWidget(self.add_button)
+        # self.delete_button = QPushButton("−")
+        # self.delete_button.setFont(QFont("Segoe UI Symbol", 16))
+        # self.delete_button.setFixedSize(28, 28)
+        # layout.addWidget(self.delete_button)
+        # self.add_button.clicked.connect(self.add_task)
+        # self.delete_button.clicked.connect(self.delete_task)
 
 
         self.open_dashboard_button = QPushButton("⚙️")
-        self.open_dashboard_button.setFixedSize(28, 28)
+        self.open_dashboard_button.setFixedSize(30, 30)
         # Khi nút này được nhấn, nó sẽ phát ra tín hiệu dashboard_requested
         self.open_dashboard_button.clicked.connect(self.dashboard_requested.emit)
         layout.addWidget(self.open_dashboard_button)
