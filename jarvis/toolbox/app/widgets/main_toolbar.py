@@ -1,4 +1,3 @@
-
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -6,8 +5,6 @@ from PySide6.QtWidgets import (
     QMenu,
     QFrame,
 )
-
-# === THAY ĐỔI 1: Import thêm các lớp cần thiết cho ảnh động ===
 from PySide6.QtCore import (
     Qt,
     QPropertyAnimation,
@@ -15,12 +12,12 @@ from PySide6.QtCore import (
     QSize
 )
 from PySide6.QtGui import QAction,QMouseEvent, QMovie
-
 from app.constants import BUTTON_SIZE, ANIMATION_DURATION
 from app.styles import GIF_PATH
 from app.clickableLabel import ClickableLabel
 from .pomodoro import PomodoroWidgetCompact
 from .task import TaskWidgetCompact
+from app.dashboard import DashboardWindow
 
 class FocusToolbar(QWidget):
     """Cửa sổ nổi chính, có thể thu gọn/mở rộng."""
@@ -28,6 +25,7 @@ class FocusToolbar(QWidget):
     def __init__(self):
         super().__init__()
         self.is_expanded, self.drag_position = False, None
+        self.dashboard = None  # Biến để lưu cửa sổ Dashboard
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
             | Qt.WindowType.WindowStaysOnTopHint
@@ -44,17 +42,15 @@ class FocusToolbar(QWidget):
         window_layout.setContentsMargins(0, 0, 0, 0)
         window_layout.addWidget(self.main_container)
 
-        # === THAY ĐỔI 2: Thay thế QPushButton bằng ClickableLabel ===
-        # Thay vì nút bấm, chúng ta tạo một label có thể nhấp chuột
+        # Thay thế QPushButton bằng ClickableLabel
         self.toggle_label = ClickableLabel(self)
         self.toggle_label.setObjectName(
             "ToggleButton"
-        )  # Giữ lại tên để áp dụng style cũ
+        )  # Đặt tên cho label để dễ dàng định dạng trong CSS
         self.toggle_label.setFixedSize(BUTTON_SIZE + 40, BUTTON_SIZE)
         self.toggle_label.clicked.connect(self.toggle_animation)
 
         # Tạo QMovie để hiển thị GIF
-
         self.movie = QMovie(GIF_PATH)  # Đảm bảo file này tồn tại
         if not self.movie.isValid():
             print("Lỗi: Không thể tải file waving_cat.gif")
@@ -66,18 +62,14 @@ class FocusToolbar(QWidget):
             )  # Co giãn GIF vừa với label
             self.movie.start()  # Bắt đầu chạy ảnh động
 
-        # ... các phần còn lại của __init__ không đổi ...
         self.collapsible_container = QWidget()
         self.collapsible_container.setObjectName("CollapsibleContainer")
         container_layout = QHBoxLayout(self.collapsible_container)
         container_layout.setContentsMargins(5, 0, 5, 0)
         container_layout.setSpacing(5)
 
-
         self.task_widget = TaskWidgetCompact()
-        self.task_widget.dashboard_requested.connect(self.open_dashboard_window) # Kết nối tín hiệu từ widget nhiệm vụ
         container_layout.addWidget(self.task_widget)
-
 
         line = QFrame()
         line.setFrameShape(QFrame.Shape.VLine)
@@ -88,19 +80,27 @@ class FocusToolbar(QWidget):
         self.expanded_width = self.collapsible_container.sizeHint().width() + 10
         self.collapsible_container.setMaximumWidth(0)
 
-        # === THAY ĐỔI 3: Thêm label vào layout thay vì nút bấm ===
         self.main_layout.addWidget(self.toggle_label)
         self.main_layout.addWidget(self.collapsible_container)
         self.main_layout.addStretch(1)
 
+    # def open_dashboard_window(self):
+    #     """
+    #     Hàm này sẽ được gọi khi nút ⚙️ được nhấn.
+    #     Hiện tại nó chỉ in ra một thông báo để kiểm tra.
+    #     Sau này, nó sẽ chứa logic để mở cửa sổ Dashboard.
+    #     """
+    #     print("Yêu cầu mở cửa sổ Dashboard!")
+    #     self.dashboard = DashboardWindow()
+    #     self.dashboard.show()
+
     def open_dashboard_window(self):
-        """
-        Hàm này sẽ được gọi khi nút ⚙️ được nhấn.
-        Hiện tại nó chỉ in ra một thông báo để kiểm tra.
-        Sau này, nó sẽ chứa logic để mở cửa sổ Dashboard.
-        """
-        print("Yêu cầu mở cửa sổ Dashboard!")
-        # TODO: self.dashboard.show()
+        # Nếu dashboard chưa tồn tại hoặc đã bị đóng, tạo mới
+        if self.dashboard is None or not self.dashboard.isVisible():
+            self.dashboard = DashboardWindow()
+            # Khi dashboard bị đóng, không xóa đối tượng, chỉ ẩn đi
+            self.dashboard.destroyed.connect(lambda: setattr(self, 'dashboard', None))
+        self.dashboard.show()
 
     def toggle_animation(self):
         # Hàm này không có thay đổi, nó vẫn hoạt động như cũ

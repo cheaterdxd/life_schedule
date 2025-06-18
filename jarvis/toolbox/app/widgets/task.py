@@ -6,26 +6,22 @@ from PySide6.QtWidgets import (
     QInputDialog,
     QMessageBox
 )
-from PySide6.QtGui import QFont
-from PySide6.QtCore import Signal
-
+# from PySide6.QtCore import Signal
+from app.dashboard import DashboardWindow
 
 class TaskWidgetCompact(QWidget):
     # Lớp này không có thay đổi
-    dashboard_requested = Signal()
-
-
+    # dashboard_requested = Signal()
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.dashboard = None
         layout = QHBoxLayout(self)
         layout.setContentsMargins(5, 5, 5, 5)
         layout.setSpacing(5)
 
-
         self.task_combo = QComboBox()
         self.task_combo.setMinimumWidth(150)
         layout.addWidget(self.task_combo)
-
 
         # self.add_button = QPushButton("+")
         # self.add_button.setFont(QFont("Segoe UI Symbol", 16))
@@ -38,12 +34,22 @@ class TaskWidgetCompact(QWidget):
         # self.add_button.clicked.connect(self.add_task)
         # self.delete_button.clicked.connect(self.delete_task)
 
-
         self.open_dashboard_button = QPushButton("⚙️")
         self.open_dashboard_button.setFixedSize(30, 30)
         # Khi nút này được nhấn, nó sẽ phát ra tín hiệu dashboard_requested
-        self.open_dashboard_button.clicked.connect(self.dashboard_requested.emit)
+        # self.open_dashboard_button.clicked.connect(self.dashboard_requested.emit)
+        self.open_dashboard_button.clicked.connect(self.open_dashboard)
         layout.addWidget(self.open_dashboard_button)
+        
+    def open_dashboard(self):
+        # Nếu dashboard đã bị đóng hoặc chưa tạo, tạo mới
+        if self.dashboard is None or not self.dashboard.isVisible():
+            self.dashboard = DashboardWindow()
+            # Khi dashboard bị đóng, gán lại self.dashboard = None
+            self.dashboard.destroyed.connect(lambda: setattr(self, 'dashboard', None))
+        self.dashboard.show()
+        self.dashboard.raise_()  # Đưa lên trên cùng
+        self.dashboard.activateWindow()
 
     def add_task(self):
         dialog = QInputDialog(self)

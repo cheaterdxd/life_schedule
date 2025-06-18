@@ -1,9 +1,6 @@
-# main.py
-
-import sys
+import sys, qdarktheme
 from PySide6.QtWidgets import QApplication
 from app.widgets.main_toolbar import FocusToolbar
-import qdarktheme
 from app.styles import CUSTOM_STYLESHEET
 
 if __name__ == "__main__":
@@ -14,5 +11,4 @@ if __name__ == "__main__":
     # Tạo và hiển thị thanh toolbar
     toolbar = FocusToolbar()
     toolbar.show()
-    
     sys.exit(app.exec())

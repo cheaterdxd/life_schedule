@@ -1,6 +1,4 @@
-import os
-import sys
-import ctypes
+import os, sys, ctypes
 
 def get_blocked_sites():
     """Đọc danh sách các trang web cần chặn từ file blocked_sites.txt."""

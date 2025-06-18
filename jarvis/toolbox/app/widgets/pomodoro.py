@@ -1,16 +1,15 @@
-import sys
 from PySide6.QtWidgets import (
     QWidget,
     QPushButton,
     QHBoxLayout,
-    QLabel
+    QLabel,
+    QMessageBox
 )
-
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QFont
 from app.constants import WORK_MINUTES, SHORT_BREAK_MINUTES, LONG_BREAK_MINUTES
 from app.focus_mode import activate_block, deactivate_block
-from PySide6.QtWidgets import QMessageBox
+
 class PomodoroWidgetCompact(QWidget):
     # Lớp này không có thay đổi
     def __init__(self, parent=None):
