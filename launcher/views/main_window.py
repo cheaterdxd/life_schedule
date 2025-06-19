@@ -1,57 +1,45 @@
-from PySide6.QtWidgets import QMainWindow, QSplitter
-
-# Import các component từ thư mục 'components'
-from components.panel_widget import PanelWidget
+from PySide6.QtWidgets import QMainWindow
 from components.expandable_button import ExpandableButtonWidget
-from PySide6.QtCore import Qt
-# --- Lớp cửa sổ chính của ứng dụng ---
+from utils.layout_loader import LayoutLoader
+
 class MainWindow(QMainWindow):
-    # Trong lớp LauncherWindow
+    """
+    Cửa sổ chính của ứng dụng launcher.
+    Nó sử dụng LayoutLoader để tạo và quản lý bố cục chính của màn hình.
+    """
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Minimalist Launcher") # Đổi tên cho phù hợp
+        self.setWindowTitle("Minimalist Launcher") # Đặt tiêu đề cho cửa sổ.
 
-        main_splitter = QSplitter(Qt.Orientation.Horizontal)
-        
-        # Tạo panel mà không cần truyền màu nữa
-        panel1 = PanelWidget("Workspace 1")
-        panel2 = PanelWidget("Main View")
-        panel3 = PanelWidget("Details")
-        
-        main_splitter.addWidget(panel1)
-        main_splitter.addWidget(panel2)
-        main_splitter.addWidget(panel3)
-        main_splitter.setSizes([200, 400, 200])
-        
-        # Loại bỏ đường viền của QSplitter handle
+        loader = LayoutLoader()
+        main_splitter = loader.create_layout(self) # Tạo splitter và các widget con của nó.
+
         main_splitter.setStyleSheet("""
             QSplitter::handle {
-                background-color: transparent;
+                background-color: black; /* Đặt màu nền của thanh handle là đen. */
             }
             QSplitter::handle:horizontal {
-                width: 1px;
+                width: 1px; /* Đặt chiều rộng cho thanh handle ngang. */
+            }
+            QSplitter::handle:vertical {
+                height: 1px; /* Đặt chiều cao cho thanh handle dọc. */
             }
         """)
-        main_splitter.setHandleWidth(1) # Làm cho thanh chia mỏng hơn
-
-        self.setCentralWidget(main_splitter)
         
-        self.expandable_button = ExpandableButtonWidget(self)
-        self.expandable_button.exit_requested.connect(self.close)
+        self.setCentralWidget(main_splitter) # Đặt splitter làm widget trung tâm của cửa sổ chính.
 
+        self.expandable_button = ExpandableButtonWidget(self) # Tạo nút chức năng mở rộng/thu gọn.
+        self.expandable_button.exit_requested.connect(self.close) # Kết nối signal 'exit_requested'.
 
-    # Ghi đè sự kiện resize để luôn giữ nút ở góc dưới bên phải
     def resizeEvent(self, event):
-        """Đảm bảo nút chức năng luôn ở góc dưới BÊN TRÁI."""
+        """
+        Ghi đè phương thức resizeEvent để đảm bảo nút chức năng luôn nằm ở góc dưới bên trái.
+        """
         super().resizeEvent(event)
-        margin = 20
+        margin = 20 # Đặt lề.
+        button_height = self.expandable_button.sizeHint().height() # Lấy chiều cao của nút.
         
-        # Chiều cao nút cần được lấy từ sizeHint() vì kích thước có thể đang trong animation
-        button_height = self.expandable_button.sizeHint().height() 
+        x = margin # Tọa độ X: Cách mép trái một khoảng margin.
+        y = self.height() - button_height - margin # Tọa độ Y: Cách mép dưới một khoảng margin.
         
-        # Sửa logic tính tọa độ x để căn lề trái
-        x = margin
-        y = self.height() - button_height - margin
-        
-        self.expandable_button.move(x, y)
-
+        self.expandable_button.move(x, y) # Di chuyển nút chức năng đến vị trí đã tính toán.
