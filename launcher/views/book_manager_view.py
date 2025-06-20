@@ -109,12 +109,16 @@ class BookManagerView(QWidget):
         Mở dialog để thêm sách mới.
         Nếu dữ liệu được chấp nhận, thêm sách vào danh sách và lưu lại.
         """
-        dialog = BookFormDialog(self)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
-            new_book = dialog.get_data()
-            self.books.append(new_book)
-            self.data_manager.save_books(self.books)
-            self.refresh_list()
+        try:
+            dialog = BookFormDialog(self)
+            if dialog.exec() == QDialog.DialogCode.Accepted:
+                new_book = dialog.get_data()
+                self.books.append(new_book)
+                self.data_manager.save_books(self.books)
+                self.refresh_list()
+        except Exception as e:
+            QMessageBox.critical(self, "Lỗi", f"Không thể thêm sách: {e}")
+            print(f"Error adding book: {e}")  # In lỗi ra console để debug nếu cần thiết.
 
     def delete_book(self):
         """
